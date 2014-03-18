@@ -15,6 +15,20 @@ CREATE_MESSAGE_QUEUE_SQL = ("create table if not exists messages "
                             "FOREIGN KEY(queueid) REFERENCES queue(id));")
 
 
+def get_version():
+    import pkg_resources
+    try:
+        dist = pkg_resources.get_distribution("dag")
+        if dist:
+            return dist.version
+    except pkg_resources.DistributionNotFound:
+        pass
+    return "0.0"
+
+
+__version__ = get_version()
+
+
 def open_db(dbpath):
     import sqlite3
     return sqlite3.connect(dbpath)
@@ -89,8 +103,6 @@ class Queue():
 
     def peek(self, recipient=None):
         db = None
-        if not recipient:
-            recipient = self.sender_name
         try:
             import sqlite3
             db = open_db(self.dbpath)
@@ -125,8 +137,6 @@ class Queue():
 
     def has_message(self, recipient=None):
         db = None
-        if not recipient:
-            recipient = self.sender_name
         try:
             import sqlite3
             db = open_db(self.dbpath)
