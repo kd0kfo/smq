@@ -80,7 +80,7 @@
 		 <attribute name="Main-Class" value="${test.class}"/>
          </manifest>
       </jar>
-      <java fork="true" classpathref="targetclasspath" classname="${test.class}"/>
+      <java fork="true" failonerror="true" classpathref="targetclasspath" classname="${test.class}"/>
    </target>
 
    <target name="javadoc">
