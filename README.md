@@ -13,3 +13,8 @@ License
 
 Available under the terms of the GNU Public License version 3, which may be found in the LICENSE file or online at https://www.gnu.org/copyleft/gpl.html
 
+
+Build Status
+------------
+
+[![Build Status](https://travis-ci.org/kd0kfo/smq.png?branch=master)](https://travis-ci.org/kd0kfo/smq)
