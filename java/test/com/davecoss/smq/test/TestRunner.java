@@ -32,19 +32,27 @@ public class TestRunner {
 		
 		// Receive Messages
 		System.out.println("Testing receive");
+		System.out.println(String.format("There are %d total messages.", queue.countMessages(null)));
+		System.out.println("Does Charlie have a message?");
+		if(queue.hasMessage("Charlie")) {
+			System.out.println("Did not expect Charlie to have a message. ERROR!");
+			System.exit(1);
+		} else {
+			System.out.println("No, that's good. We didn't send him one.");
+		}
 		System.out.println("Getting Bob's message");
 		System.out.print("Does Bob have a message? ");
 		if(queue.hasMessage("Bob"))
-			System.out.println("Yes");
+			System.out.println(String.format("Yes, he has %d message(s)", queue.countMessages("Bob")));
 		else
 		{
-			System.out.println("No");
+			System.out.println("No, ERROR!");
 			System.exit(1);
 		}
 		Message message = queue.next("Bob");
 		System.out.println(String.format("Got %s type message: %s", message.content_type, message.content));
 		
-		System.out.println("Getting Alice's messages using while");
+		System.out.println(String.format("Getting Alice's %d messages using while", queue.countMessages("Alice")));
 		while(queue.hasMessage("Alice"))
 		{
 			message = queue.next("Alice");

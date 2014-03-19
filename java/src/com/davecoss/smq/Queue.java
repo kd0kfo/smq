@@ -124,7 +124,7 @@ public class Queue {
 		}
 	}
 	
-	public boolean hasMessage(String recipient) throws SQLException {
+	public int countMessages(String recipient) throws SQLException {
 		PreparedStatement stat = null;
 		try {
 			if(recipient != null && recipient.length() != 0) {
@@ -137,12 +137,16 @@ public class Queue {
 			}
 			ResultSet result = stat.executeQuery();
 			if(result == null)
-				return false;
-			return result.getInt(1) != 0;
+				return 0;
+			return result.getInt(1);
 		} finally {
 			if(stat != null)
 				stat.close();
 		}
+	}
+	
+	public boolean hasMessage(String recipient) throws SQLException {
+		return countMessages(recipient) != 0;
 	}
 
 }

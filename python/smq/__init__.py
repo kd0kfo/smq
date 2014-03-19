@@ -135,7 +135,7 @@ class Queue():
                 db.close()
         return message
 
-    def has_message(self, recipient=None):
+    def count_messages(self, recipient=None):
         db = None
         try:
             import sqlite3
@@ -143,8 +143,8 @@ class Queue():
             db.row_factory = sqlite3.Row
             c = db.cursor()
             if recipient:
-                c.execute("select count(*) from messages where queueid == ? and "
-                          "target == ? order by id asc limit 1;",
+                c.execute("select count(*) from messages where queueid == ? "
+                          "and target == ? order by id asc limit 1;",
                           (self.queueid, recipient))
             else:
                 c.execute("select count(*) from messages where queueid == ? "
@@ -155,3 +155,5 @@ class Queue():
             if db:
                 db.close()
 
+    def has_message(self, recipient=None):
+        return self.count_messages(recipient) != 0

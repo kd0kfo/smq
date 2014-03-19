@@ -12,6 +12,11 @@ fi
 
 echo Testing Java API
 cd java
+if [[ ! -e lib/sqlite-jdbc-3.7.2.jar ]];then
+	cd lib
+	./downloadDependencies.sh || exit 1
+	cd ..
+fi
 ant test
 RETVAL=$?
 cd ..
