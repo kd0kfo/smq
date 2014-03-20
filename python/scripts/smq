@@ -96,6 +96,7 @@ if __name__ == "__main__":
         exit(1)
 
     console = HistoryConsole()
+    console.set_tab_completes(COMMAND_DICT.keys())
     queue_system = QueueWrapper(smq.Queue(queue_name, queue_filename))
     rawinput = get_input(console)
     while rawinput and rawinput != "exit":
