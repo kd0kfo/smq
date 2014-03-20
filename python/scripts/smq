@@ -94,6 +94,7 @@ if __name__ == "__main__":
         print("Queue file required")
         print("Run, smq -h for help")
         exit(1)
+    queue_filename = args[0]
 
     console = HistoryConsole()
     console.set_tab_completes(COMMAND_DICT.keys())
