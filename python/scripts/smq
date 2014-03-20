@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+
+
+import smq
+import os.path
+from pycoss import HistoryConsole, CommandRunner
+
+
+PROMPT = "> "
+COMMAND_DICT = {"count": "List of pending messages",
+                "myname": "Sets name of user",
+                "next": "Gets next message",
+                "send": "Sends a message. Usage: send <User> <Message Text>",
+                "queue": "Sets the queue name. If no name is provided, the current queue is listed.",
+                "help": "Gives help on commands.",
+                "whoami": "Gives the name of the user."}
+
+
+def print_help(command=None):
+    print("Usage: smq [-h] <queue file>")
+
+
+def get_input(console):
+    try:
+        return console.raw_input(PROMPT)
+    except EOFError:
+        return None
+
+
+class QueueWrapper(CommandRunner):
+    def __init__(self, queue, sender=None):
+        super(QueueWrapper, self).__init__(COMMAND_DICT)
+        self.queue = queue
+        self.sender = sender
+
+    def run_command(self, command, args):
+        if not command:
+            return ""
+        super(QueueWrapper, self).run_command(command, args)
+        if command == "count":
+            return self.queue.count_messages(self.sender)
+        elif command == "help":
+            if not args:
+                return ", ".join(self.list_commands())
+            msg = self.help(args[0])
+            if not msg:
+                return "No help for %s" % args[0]
+            return msg
+        elif command == "myname":
+            self.argcount_assert(args, 1)
+            self.sender = args[0]
+            return "Set name to %s" % args[0]
+        elif command == "next":
+            msg = self.queue.next(self.sender)
+            if not msg:
+                return "No messages"
+            return "From %s: %s" % (msg.sender, msg.content)
+        elif command == "send":
+            self.argcount_assert(args, 2, True)
+            recipient = args[0]
+            content = " ".join(args[1:])
+            self.queue.send(smq.Message(content, "str", self.sender, recipient))
+            return "Message sent"
+        elif command == "queue":
+            if not args:
+                return self.queue.name
+            self.queue = smq.Queue(args[0], self.queue.dbpath)
+            return "Using queue: %s" % args[0]
+        elif command == "whoami":
+            return self.sender
+        return ""
+
+if __name__ == "__main__":
+    from sys import argv
+    from getopt import getopt
+    import smq
+
+    if "--version" in argv or "-version" in argv:
+        print(smq.__version__)
+        exit(0)
+
+    (optlist,args) = getopt(argv[1:], 'h', ["help"])
+
+    queue_filename = None
+    queue_name = "test"
+    for (opt, optarg) in optlist:
+        while opt[0] == '-':
+            opt = opt[1:]
+        if opt in ["h", "help"]:
+            print_help()
+            exit(0)
+
+    if not args:
+        print("Queue file required")
+        print("Run, smq -h for help")
+        exit(1)
+
+    console = HistoryConsole()
+    queue_system = QueueWrapper(smq.Queue(queue_name, queue_filename))
+    rawinput = get_input(console)
+    while rawinput and rawinput != "exit":
+        tokens = rawinput.split(" ")
+        cmd = tokens[0]
+        cmd_args = tokens[1:]
+        try:
+            print(queue_system.run_command(cmd, cmd_args))
+        except Exception as e:
+            print("Error: %s" % e)
+        rawinput = get_input(console)

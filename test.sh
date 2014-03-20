@@ -2,6 +2,7 @@
 
 echo Testing Python API
 cd python
+./resolve_dependencies.sh
 PYTHONPATH=$PWD python setup.py test
 RETVAL=$?
 cd ..

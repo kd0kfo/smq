@@ -42,7 +42,7 @@ class Tester(Command):
             raise te
 
 
-the_scripts = []
+the_scripts = ['scripts/smq']
 
 setup (name ='smq',
        version = '1.0.b',
