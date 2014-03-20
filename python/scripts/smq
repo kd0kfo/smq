@@ -10,6 +10,7 @@ PROMPT = "> "
 COMMAND_DICT = {"count": "List of pending messages",
                 "myname": "Sets name of user",
                 "next": "Gets next message",
+                "peek": "Gets the next message without removing it from the queue",
                 "send": "Sends a message. Usage: send <User> <Message Text>",
                 "queue": "Sets the queue name. If no name is provided, the current queue is listed.",
                 "help": "Gives help on commands.",
@@ -55,6 +56,11 @@ class QueueWrapper(CommandRunner):
             if not msg:
                 return "No messages"
             return "From %s: %s" % (msg.sender, msg.content)
+        elif command == "peek":
+            msg = self.queue.peek(self.sender)
+            if not msg:
+                return "No messages"
+            return "(Peek) From %s: %s" % (msg.sender, msg.content)
         elif command == "send":
             self.argcount_assert(args, 2, True)
             recipient = args[0]
