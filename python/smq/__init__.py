@@ -29,9 +29,9 @@ def get_version():
 __version__ = get_version()
 
 
-def open_db(dbpath):
+def open_db(dbpath, timeout=5):
     import sqlite3
-    return sqlite3.connect(dbpath)
+    return sqlite3.connect(dbpath, timeout=timeout)
 
 
 class DBError(Exception):
@@ -58,17 +58,18 @@ class Message():
 
 
 class Queue():
-    def __init__(self, name, dbpath=None):
+    def __init__(self, name, dbpath=None, timeout=5):
         import sqlite3
         self.name = name
         self.queueid = None
+        self.timeout = timeout
         if not dbpath:
             self.dbpath = "%s.db" % name
         else:
             self.dbpath = dbpath
         db = None
         try:
-            db = open_db(self.dbpath)
+            db = open_db(self.dbpath, self.timeout)
             db.row_factory = sqlite3.Row
             c = db.cursor()
             for sql in (CREATE_QUEUE_SQL, CREATE_MESSAGE_QUEUE_SQL):
