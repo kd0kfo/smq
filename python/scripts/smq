@@ -8,12 +8,12 @@ from pycoss import HistoryConsole, CommandRunner
 
 PROMPT = "> "
 COMMAND_DICT = {"count": "List of pending messages",
+                "help": "Gives help on commands.",
                 "myname": "Sets name of user",
                 "next": "Gets next message",
                 "peek": "Gets the next message without removing it from the queue",
-                "send": "Sends a message. Usage: send <User> <Message Text>",
                 "queue": "Sets the queue name. If no name is provided, the current queue is listed.",
-                "help": "Gives help on commands.",
+                "send": "Sends a message. Usage: send <User> <Message Text>",
                 "whoami": "Gives the name of the user."}
 
 
@@ -61,17 +61,17 @@ class QueueWrapper(CommandRunner):
             if not msg:
                 return "No messages"
             return "(Peek) From %s: %s" % (msg.sender, msg.content)
+        elif command == "queue":
+            if not args:
+                return self.queue.name
+            self.queue = smq.Queue(args[0], self.queue.dbpath)
+            return "Using queue: %s" % args[0]
         elif command == "send":
             self.argcount_assert(args, 2, True)
             recipient = args[0]
             content = " ".join(args[1:])
             self.queue.send(smq.Message(content, "str", self.sender, recipient))
             return "Message sent"
-        elif command == "queue":
-            if not args:
-                return self.queue.name
-            self.queue = smq.Queue(args[0], self.queue.dbpath)
-            return "Using queue: %s" % args[0]
         elif command == "whoami":
             return self.sender
         return ""
@@ -85,16 +85,19 @@ if __name__ == "__main__":
         print(smq.__version__)
         exit(0)
 
-    (optlist,args) = getopt(argv[1:], 'h', ["help"])
+    (optlist,args) = getopt(argv[1:], 'ht:', ["help", "timeout="])
 
     queue_filename = None
     queue_name = "test"
+    timeout = 10
     for (opt, optarg) in optlist:
         while opt[0] == '-':
             opt = opt[1:]
         if opt in ["h", "help"]:
             print_help()
             exit(0)
+        elif opt in ["t", "timeout"]:
+            timeout = int(optarg)
 
     if not args:
         print("Queue file required")
@@ -104,7 +107,8 @@ if __name__ == "__main__":
 
     console = HistoryConsole()
     console.set_tab_completes(COMMAND_DICT.keys())
-    queue_system = QueueWrapper(smq.Queue(queue_name, queue_filename))
+    queue_system = QueueWrapper(smq.Queue(queue_name, queue_filename,
+                                          timeout=timeout))
     rawinput = get_input(console)
     while rawinput and rawinput != "exit":
         tokens = rawinput.split(" ")
