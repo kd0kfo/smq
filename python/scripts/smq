@@ -18,7 +18,9 @@ COMMAND_DICT = {"count": "List of pending messages",
 
 
 def print_help(command=None):
-    print("Usage: smq [-h] <queue file>")
+    print("Usage: smq [-h] [-t INT] <queue file>")
+    print("Options:")
+    print("-t, --timeout INT\tSets the database timeout in seconds")
 
 
 def get_input(console):
