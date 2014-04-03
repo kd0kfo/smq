@@ -14,6 +14,9 @@ public class AccessToken {
 	public static boolean authorize(File dbpath, String username, String authtoken) throws SQLException {
 		if(dbpath == null || username == null || authtoken == null)
 			return false;
+		if(!dbpath.exists()) {
+			throw new SQLException("DB not initialized");
+		}
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {

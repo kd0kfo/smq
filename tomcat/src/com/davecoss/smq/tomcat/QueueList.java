@@ -82,6 +82,9 @@ public class QueueList extends HttpServlet {
 	
 	public static Queue loadQueue(HttpServletRequest request) throws ClassNotFoundException, SQLException {
 		File queueFile = new File(getStringParameter(request, "queuefile", DEFAULT_QUEUE_FILENAME));
+		if(!queueFile.exists()) {
+			throw new SQLException("DB not initialized");
+		}
 		String queueName = getStringParameter(request, "queue", DEFAULT_QUEUE_NAME);
 		return new Queue(queueName, queueFile);
 	}
