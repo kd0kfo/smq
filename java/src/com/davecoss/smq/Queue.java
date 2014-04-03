@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Queue {
 	
@@ -149,6 +151,30 @@ public class Queue {
 	
 	public boolean hasMessage(String recipient) throws SQLException {
 		return countMessages(recipient) != 0;
+	}
+	
+	public Collection<Message> list(String recipient) throws SQLException {
+		ArrayList<Message> retval = new ArrayList<Message>();
+		PreparedStatement stat = null;
+		try {
+			if(recipient != null && recipient.length() != 0) {
+				stat = db.prepareStatement("select * from messages where queueid == ? and target == ? order by id asc limit 1;");
+				stat.setInt(1, id);
+				stat.setString(2, recipient);
+			} else {
+				stat = db.prepareStatement("select * from messages where queueid == ? order by id asc limit 1;");
+				stat.setInt(1, id);
+			}
+			ResultSet result = stat.executeQuery();
+			if(result.isClosed())
+				return retval;
+			while(result.next())
+				retval.add(Message.from_sql_row(result));
+			return retval;
+		} finally {
+			if(stat != null)
+				stat.close();
+		}
 	}
 
 }
