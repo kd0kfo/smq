@@ -44,6 +44,7 @@ public class Queue {
         try {
         	stat = retval.prepareStatement(CREATE_QUEUE_SQL);
         	stat.execute();
+        	stat.close();
         	stat = retval.prepareStatement(CREATE_MESSAGE_QUEUE_SQL);
         	stat.execute();
         	return retval;
@@ -60,6 +61,7 @@ public class Queue {
 			stat = db.prepareStatement("insert or ignore into queue values (NULL, ?, NULL);");
 			stat.setString(1, name);
 			stat.execute();
+			stat.close();
 			stat = db.prepareStatement("select id from queue where name = ?;");
 			stat.setString(1, name);
 			result = stat.executeQuery();
