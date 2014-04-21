@@ -45,7 +45,7 @@ class Tester(Command):
 the_scripts = ['scripts/smq']
 
 setup (name ='smq',
-       version = '1.0.b',
+       version = '1.0.0',
        url = 'https://github.com/kd0kfo/smq',
        license = 'GPL v3',
        description = 'SQLite based Message Queue',

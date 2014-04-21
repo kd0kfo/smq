@@ -1,6 +1,6 @@
 <project>
 	<property name="packagename" value="smq"/>
-	<property name="version" value="1.0.b"/>
+	<property name="version" value="1.0.0"/>
 	<property name="main.class" value="com.davecoss.smq.util.CLI"/>
 	<property name="test.class" value="com.davecoss.smq.test.TestRunner"/>
 
